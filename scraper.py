@@ -8,7 +8,7 @@ from requests.exceptions import RequestException
 from contextlib import closing
 from fake_useragent import UserAgent
 from lxml import html
-
+import json
 
 def simple_get(url):
     """
@@ -68,7 +68,7 @@ def get_movie(args):
 
 def main(args):
     try:
-        print(get_movie(args))
+        print(json.dumps(get_movie(args)))
     except Exception as e:
         logging.critical("Fatal error hapend: {}".format(e))
         sys.exit(1)
