@@ -1,0 +1,12 @@
+---
+version: '3'
+services:
+  restApi:
+    image: restapi:latest
+    container_name: restapi_app
+    build: .
+    restart: unless-stopped
+    expose:
+      - "8080"
+    ports:
+      - "8080:8080"
