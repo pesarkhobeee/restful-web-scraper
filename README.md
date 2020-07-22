@@ -2,7 +2,7 @@
 
 ### Development Environment
 
-At the very beginning, you have to initial a virtual environment with this:
+At the very beginning, you have to initiate a virtual environment with this:
 
 ```
 sudo apt-get install -y python3-venv
@@ -43,3 +43,9 @@ For production you can use docker and docker-compose:
 docker-compose up -d
 ```
 
+Then you can check this URL inside of your webbrowser : `http://127.0.0.1:8080/movie/amazon/B00K19SD8Q`
+If you faced with an error please refresh the page until you see the right result:
+
+![ScreenShot](https://raw.github.com/pesarkhobeee/restful-web-scraper/master/Screenshot-success.png)
+
+![ScreenShot](https://raw.github.com/pesarkhobeee/restful-web-scraper/master/Screenshot-failure.png)
