@@ -6,7 +6,8 @@ import sys
 from requests import get
 from requests.exceptions import RequestException
 from contextlib import closing
-# from bs4 import BeautifulSoup
+from fake_useragent import UserAgent
+from lxml import html
 
 
 def simple_get(url):
@@ -16,16 +17,17 @@ def simple_get(url):
     text content, otherwise return None.
     """
     try:
-        with closing(get(url, stream=True)) as resp:
+        ua = UserAgent()
+        header = {'User-Agent': str(ua.chrome)}
+        with closing(get(url, headers=header, stream=True)) as resp:
             if is_good_response(resp):
                 return resp.content
             else:
                 return None
 
     except RequestException as e:
-        logging.critical(
+        raise Exception(
                 'Error during requests to {0} : {1}'.format(url, str(e)))
-        return None
 
 
 def is_good_response(resp):
@@ -37,11 +39,36 @@ def is_good_response(resp):
             and content_type is not None
             and content_type.find('html') > -1)
 
+def get_movie(args):
+    """
+    Downloads the movie page from Amazon
+    and extract the information
+    """
+    url = args.base_url + args.MovieID
+    response = simple_get(url)
+
+    if response is not None:
+        tree = html.fromstring(response)
+        title = tree.xpath('//h1[@data-automation-id="title"]/text()')[0]
+        date = tree.xpath('//span[@data-automation-id="release-year-badge"]/text()')[0]
+        actors = tree.xpath('//a[@class="_1NNx6V"]/text()')
+        image = tree.xpath('//img[@id="atf-thumb"]/@src')
+        similar_ids = tree.xpath('//li[@class="_2AgxOB"]//a/@href')
+        similar_ids = [i.split('/')[4] for i in similar_ids]
+        result = {
+                "title": title,
+                "release_year": date,
+                "actors": actors,
+                "poster": image,
+                "similar_ids": similar_ids}
+        return(result)
+
+    # Raise an exception if we failed to get any data from the url
+    raise Exception('Error retrieving contents at {}'.format(url))
+
 def main(args):
     try:
-        print(args.MovieID)
-        raw_html = simple_get('http://pathseeker.ir')
-        print(len(raw_html))
+        print(get_movie(args))
     except Exception as e:
         logging.critical("Fatal error hapend: {}".format(e))
         sys.exit(1)
@@ -52,6 +79,10 @@ if __name__ == "__main__":
     parser.add_argument(
         'MovieID', type=str,
         help='ID of the movie in Amazon store'
+    )
+    parser.add_argument(
+        '--base-url', type=str, default="https://www.amazon.de/gp/product/",
+        help='The base URL to join with Movie ID'
     )
     parser.add_argument(
         '--log-level', type=str, default="WARNING",
