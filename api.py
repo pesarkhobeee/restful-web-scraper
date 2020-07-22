@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, escape
 from flask_restful import Api, Resource
 from subprocess import check_output, CalledProcessError, STDOUT
 import json
@@ -8,6 +8,10 @@ api = Api(app)
 
 
 def getstatusoutput(cmd):
+    """
+    Run the desire command in the command line and
+    get the result and also return code from it.
+    """
     try:
         data = check_output(
                 cmd, shell=True, universal_newlines=True, stderr=STDOUT)
@@ -20,11 +24,13 @@ def getstatusoutput(cmd):
     return status, data
 
 
-# Movie
-# shows a single domain item and lets you delete a domain item
 class Movie(Resource):
+    """
+    A simple rest class which will deploy a get interface to fetch
+    movie information from Amazon and show the result as a JSON output.
+    """
     def get(self, movie_id):
-        status, result = getstatusoutput("./scraper.py " + movie_id)
+        status, result = getstatusoutput("./scraper.py " + escape(movie_id))
         if status == 0:
             result = json.loads(result)
             httpStatusCode = 200

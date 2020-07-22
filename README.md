@@ -49,3 +49,24 @@ If you faced with an error please refresh the page until you see the right resul
 ![ScreenShot](https://raw.github.com/pesarkhobeee/restful-web-scraper/master/Screenshot-success.png)
 
 ![ScreenShot](https://raw.github.com/pesarkhobeee/restful-web-scraper/master/Screenshot-failure.png)
+
+or you can just check the HTTP status:
+
+```
+()[~/lab/justWatch/repo, master+1]: curl  -I  http://127.0.0.1:8080/movie/amazon/B00KY1U7GM
+HTTP/1.1 500 INTERNAL SERVER ERROR
+Server: gunicorn/20.0.4
+Date: Wed, 22 Jul 2020 16:20:17 GMT
+Connection: close
+Content-Type: application/json
+Content-Length: 91
+
+()[~/lab/justWatch/repo, master+1, 1s]: curl  -I  http://127.0.0.1:8080/movie/amazon/B00KY1U7GM
+HTTP/1.1 200 OK
+Server: gunicorn/20.0.4
+Date: Wed, 22 Jul 2020 16:20:25 GMT
+Connection: close
+Content-Type: application/json
+Content-Length: 465
+
+```
